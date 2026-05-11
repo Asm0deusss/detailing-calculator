@@ -27,13 +27,17 @@ body {
   border-radius: 12px;
 }
 
-h1 {
-  margin: 0 0 8px;
+.logo {
+  display: block;
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 0 14px;
 }
 
-.subtitle {
-  margin: 0 0 24px;
-  color: var(--muted);
+h1 {
+  margin: 0 0 12px;
 }
 
 .form-grid {
@@ -50,15 +54,36 @@ label {
 }
 
 select {
-  height: 40px;
+  min-height: 44px;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0 10px;
   font: inherit;
+  background: #fff;
 }
 
 .result {
   margin-top: 24px;
+  overflow-x: auto;
+}
+
+
+.copy-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  border: 1px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  background: #eef4ff;
 }
 
 table {
@@ -71,6 +96,7 @@ td {
   text-align: left;
   padding: 10px;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 th {
@@ -84,4 +110,28 @@ th {
 
 .hidden {
   display: none;
+}
+
+@media (max-width: 640px) {
+  .container {
+    margin: 12px;
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .logo {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 1.35rem;
+  }
+
+  th,
+  td {
+    padding: 8px;
+    font-size: 0.95rem;
+  }
 }

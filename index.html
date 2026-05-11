@@ -8,8 +8,8 @@
   </head>
   <body>
     <main class="container">
+      <img class="logo" src="logo.jpg" alt="CarPlace Detailing" />
       <h1>Калькулятор оклейки</h1>
-      <p class="subtitle">Выберите автомобиль и получите цены по типам пленки.</p>
 
       <form id="car-form" class="form-grid">
         <label>
@@ -27,6 +27,13 @@
         </label>
 
         <label>
+          Тип кузова
+          <select id="body" required disabled>
+            <option value="">Выберите тип кузова</option>
+          </select>
+        </label>
+
+        <label>
           Поколение
           <select id="generation" required disabled>
             <option value="">Выберите поколение</option>
@@ -34,9 +41,16 @@
         </label>
 
         <label>
-          Кузов
-          <select id="body" required disabled>
-            <option value="">Выберите кузов</option>
+          Элемент автомобиля
+          <select id="element" required disabled>
+            <option value="">Выберите элемент</option>
+          </select>
+        </label>
+
+        <label>
+          Пленка
+          <select id="film" required disabled>
+            <option value="">Выберите пленку</option>
           </select>
         </label>
       </form>
@@ -46,12 +60,13 @@
         <table>
           <thead>
             <tr>
-              <th>Тип пленки</th>
+              <th>Пленка</th>
               <th>Цена, ₽</th>
             </tr>
           </thead>
           <tbody id="price-table-body"></tbody>
         </table>
+        <button id="copy-answer" type="button" class="copy-button">Копировать ответ</button>
       </section>
 
       <p id="message" class="message"></p>
