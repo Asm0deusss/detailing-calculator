@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detailing Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Калькулятор оклейки</h1>
+      <p class="subtitle">Выберите автомобиль и получите цены по типам пленки.</p>
+
+      <form id="car-form" class="form-grid">
+        <label>
+          Марка
+          <select id="brand" required>
+            <option value="">Выберите марку</option>
+          </select>
+        </label>
+
+        <label>
+          Модель
+          <select id="model" required disabled>
+            <option value="">Выберите модель</option>
+          </select>
+        </label>
+
+        <label>
+          Поколение
+          <select id="generation" required disabled>
+            <option value="">Выберите поколение</option>
+          </select>
+        </label>
+
+        <label>
+          Кузов
+          <select id="body" required disabled>
+            <option value="">Выберите кузов</option>
+          </select>
+        </label>
+      </form>
+
+      <section id="result" class="result hidden">
+        <h2>Цены</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Тип пленки</th>
+              <th>Цена, ₽</th>
+            </tr>
+          </thead>
+          <tbody id="price-table-body"></tbody>
+        </table>
+      </section>
+
+      <p id="message" class="message"></p>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
