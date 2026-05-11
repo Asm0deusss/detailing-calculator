@@ -8,8 +8,11 @@ const priceTableBody = document.getElementById("price-table-body");
 
 let cars = [];
 
-const setOptions = (select, values, placeholder) => {
+const unique = (arr) => [...new Set(arr)];
+
+const setOptions = (select, values, placeholder, selectedValue = "") => {
   select.innerHTML = "";
+
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
   defaultOption.textContent = placeholder;
@@ -23,18 +26,12 @@ const setOptions = (select, values, placeholder) => {
   });
 
   select.disabled = values.length === 0;
+  if (selectedValue && values.includes(selectedValue)) {
+    select.value = selectedValue;
+  } else {
+    select.value = "";
+  }
 };
-
-const unique = (arr) => [...new Set(arr)];
-
-const getFilteredCars = () =>
-  cars.filter((car) => {
-    if (brandSelect.value && car.brand !== brandSelect.value) return false;
-    if (modelSelect.value && car.model !== modelSelect.value) return false;
-    if (generationSelect.value && car.generation !== generationSelect.value) return false;
-    if (bodySelect.value && car.body !== bodySelect.value) return false;
-    return true;
-  });
 
 const resetResult = () => {
   resultBlock.classList.add("hidden");
@@ -59,8 +56,14 @@ const renderPrices = (car) => {
   resultBlock.classList.remove("hidden");
 };
 
-const updateSelectors = () => {
-  const byBrand = getFilteredCars();
+const refreshForm = () => {
+  const selectedBrand = brandSelect.value;
+  const selectedModel = modelSelect.value;
+  const selectedGeneration = generationSelect.value;
+  const selectedBody = bodySelect.value;
+
+  const brands = unique(cars.map((car) => car.brand));
+  setOptions(brandSelect, brands, "Выберите марку", selectedBrand);
 
   if (!brandSelect.value) {
     setOptions(modelSelect, [], "Сначала выберите марку");
@@ -71,93 +74,63 @@ const updateSelectors = () => {
     return;
   }
 
-  const models = unique(byBrand.map((car) => car.model));
-  setOptions(modelSelect, models, "Выберите модель");
+  const brandCars = cars.filter((car) => car.brand === brandSelect.value);
+  const models = unique(brandCars.map((car) => car.model));
+  setOptions(modelSelect, models, "Выберите модель", selectedModel);
 
-  const byBrandModel = byBrand.filter((car) => car.model === modelSelect.value);
-  const generations = unique(byBrandModel.map((car) => car.generation));
-  setOptions(generationSelect, generations, "Выберите поколение");
+  if (!modelSelect.value) {
+    setOptions(generationSelect, [], "Сначала выберите модель");
+    setOptions(bodySelect, [], "Сначала выберите поколение");
+    message.textContent = "";
+    resetResult();
+    return;
+  }
 
-  const byBrandModelGeneration = byBrandModel.filter(
+  const modelCars = brandCars.filter((car) => car.model === modelSelect.value);
+  const generations = unique(modelCars.map((car) => car.generation));
+  setOptions(generationSelect, generations, "Выберите поколение", selectedGeneration);
+
+  if (!generationSelect.value) {
+    setOptions(bodySelect, [], "Сначала выберите поколение");
+    message.textContent = "";
+    resetResult();
+    return;
+  }
+
+  const generationCars = modelCars.filter(
     (car) => car.generation === generationSelect.value
   );
-  const bodies = unique(byBrandModelGeneration.map((car) => car.body));
-  setOptions(bodySelect, bodies, "Выберите кузов");
+  const bodies = unique(generationCars.map((car) => car.body));
+  setOptions(bodySelect, bodies, "Выберите кузов", selectedBody);
 
-  const selected = cars.find(
-    (car) =>
-      car.brand === brandSelect.value &&
-      car.model === modelSelect.value &&
-      car.generation === generationSelect.value &&
-      car.body === bodySelect.value
-  );
+  if (!bodySelect.value) {
+    message.textContent = "";
+    resetResult();
+    return;
+  }
+
+  const selected = generationCars.find((car) => car.body === bodySelect.value);
 
   if (selected) {
     message.textContent = "";
     renderPrices(selected);
   } else {
+    message.textContent = "Для выбранной конфигурации цены не найдены.";
     resetResult();
-    if (bodySelect.value) {
-      message.textContent = "Для выбранной конфигурации цены не найдены.";
-    }
   }
 };
 
-const preserveOrReset = (select, validValues) => {
-  if (!validValues.includes(select.value)) {
-    select.value = "";
-  }
-};
-
-const onBrandChange = () => {
-  const models = unique(cars.filter((c) => c.brand === brandSelect.value).map((c) => c.model));
-  preserveOrReset(modelSelect, models);
-  generationSelect.value = "";
-  bodySelect.value = "";
-  updateSelectors();
-};
-
-const onModelChange = () => {
-  const generations = unique(
-    cars
-      .filter((c) => c.brand === brandSelect.value && c.model === modelSelect.value)
-      .map((c) => c.generation)
-  );
-  preserveOrReset(generationSelect, generations);
-  bodySelect.value = "";
-  updateSelectors();
-};
-
-const onGenerationChange = () => {
-  const bodies = unique(
-    cars
-      .filter(
-        (c) =>
-          c.brand === brandSelect.value &&
-          c.model === modelSelect.value &&
-          c.generation === generationSelect.value
-      )
-      .map((c) => c.body)
-  );
-  preserveOrReset(bodySelect, bodies);
-  updateSelectors();
-};
-
-brandSelect.addEventListener("change", onBrandChange);
-modelSelect.addEventListener("change", onModelChange);
-generationSelect.addEventListener("change", onGenerationChange);
-bodySelect.addEventListener("change", updateSelectors);
+brandSelect.addEventListener("change", refreshForm);
+modelSelect.addEventListener("change", refreshForm);
+generationSelect.addEventListener("change", refreshForm);
+bodySelect.addEventListener("change", refreshForm);
 
 const init = async () => {
   try {
     const response = await fetch("data.json");
     cars = await response.json();
 
-    const brands = unique(cars.map((car) => car.brand));
-    setOptions(brandSelect, brands, "Выберите марку");
-    setOptions(modelSelect, [], "Сначала выберите марку");
-    setOptions(generationSelect, [], "Сначала выберите модель");
-    setOptions(bodySelect, [], "Сначала выберите поколение");
+    refreshForm();
   } catch (error) {
     message.textContent = "Не удалось загрузить данные. Проверьте data.json.";
     console.error(error);
